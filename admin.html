@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EV Repair Hub - Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+  font-family:Arial,sans-serif;
+  background:#f4f6f8;
+  margin:0;
+  padding:20px;
+}
+.container{
+  max-width:700px;
+  margin:auto;
+}
+.box{
+  background:white;
+  padding:20px;
+  margin-bottom:20px;
+  border-radius:12px;
+  box-shadow:0 2px 10px #0001;
+}
+input,textarea,button{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  box-sizing:border-box;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+button{
+  background:#111;
+  color:white;
+  cursor:pointer;
+}
+h1,h2{
+  margin-top:0;
+}
+#panel{
+  display:none;
+}
+#message{
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>EV Repair Hub Admin</h1>
+
+<div class="box" id="loginBox">
+  <h2>Admin Login</h2>
+
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
+
+  <p id="loginMessage"></p>
+</div>
+
+<div class="box" id="panel">
+
+  <h2>Control Panel</h2>
+
+  <button onclick="logout()">Logout</button>
+
+  <hr>
+
+  <h2>Add Repair Guide</h2>
+
+  <input id="title" placeholder="Repair guide title">
+
+  <textarea id="content" rows="8"
+    placeholder="Write repair guide content"></textarea>
+
+  <button onclick="addGuide()">Save Repair Guide</button>
+
+  <p id="message"></p>
+
+</div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL = "https://wwibocfzmuhflddkhygo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_K7pmzot-hdAAPUgIubrG-w_7nNTAGvY";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function login(){
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { error } =
+    await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+  if(error){
+    document.getElementById("loginMessage").textContent =
+      error.message;
+    return;
+  }
+
+  showPanel();
+}
+
+async function logout(){
+
+  await supabaseClient.auth.signOut();
+
+  document.getElementById("panel").style.display="none";
+  document.getElementById("loginBox").style.display="block";
+}
+
+function showPanel(){
+
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("panel").style.display="block";
+}
+
+async function addGuide(){
+
+  const title =
+    document.getElementById("title").value;
+
+  const content =
+    document.getElementById("content").value;
+
+  if(!title || !content){
+    document.getElementById("message").textContent =
+      "Please enter title and content.";
+    return;
+  }
+
+  const { error } =
+    await supabaseClient
+      .from("repair_guides")
+      .insert([
+        {
+          title: title
+        }
+      ]);
+
+  if(error){
+    document.getElementById("message").textContent =
+      error.message;
+    return;
+  }
+
+  document.getElementById("message").textContent =
+    "Repair guide saved successfully.";
+
+  document.getElementById("title").value="";
+  document.getElementById("content").value="";
+}
+
+async function checkLogin(){
+
+  const { data } =
+    await supabaseClient.auth.getSession();
+
+  if(data.session){
+    showPanel();
+  }
+}
+
+checkLogin();
+
+</script>
+
+</body>
+</html>
