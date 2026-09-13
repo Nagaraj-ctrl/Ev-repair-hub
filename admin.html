@@ -3,186 +3,1269 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EV Repair Hub - Admin</title>
+
+<title>EV Repair Hub - Admin Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+*{
+    box-sizing:border-box;
+}
+
 body{
-  font-family:Arial,sans-serif;
-  background:#f4f6f8;
-  margin:0;
-  padding:20px;
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f3f6f9;
+    color:#17202a;
 }
-.container{
-  max-width:700px;
-  margin:auto;
+
+button,
+input,
+textarea,
+select{
+    font:inherit;
 }
-.box{
-  background:white;
-  padding:20px;
-  margin-bottom:20px;
-  border-radius:12px;
-  box-shadow:0 2px 10px #0001;
-}
-input,textarea,button{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  box-sizing:border-box;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
+
 button{
-  background:#111;
-  color:white;
-  cursor:pointer;
+    cursor:pointer;
 }
-h1,h2{
-  margin-top:0;
+
+.topbar{
+    background:#101820;
+    color:white;
+    padding:15px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
-#panel{
-  display:none;
+
+.logo{
+    font-size:20px;
+    font-weight:bold;
 }
-#message{
-  font-weight:bold;
+
+.logout{
+    background:#e74c3c;
+    border:0;
+    color:white;
+    padding:10px 16px;
+    border-radius:8px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+/* LOGIN */
+
+.login-box{
+    max-width:450px;
+    margin:80px auto;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 25px #0001;
+    text-align:center;
+}
+
+.github-btn{
+    width:100%;
+    padding:14px;
+    border:0;
+    border-radius:9px;
+    background:#24292f;
+    color:white;
+    font-weight:bold;
+}
+
+.message{
+    margin-top:15px;
+    font-weight:bold;
+}
+
+/* DASHBOARD */
+
+.dashboard{
+    display:none;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.stat{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 2px 10px #0001;
+}
+
+.stat h3{
+    margin:0 0 10px;
+    font-size:14px;
+    color:#68737d;
+}
+
+.stat strong{
+    font-size:28px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:350px 1fr;
+    gap:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 2px 10px #0001;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    padding:12px;
+    margin:7px 0 12px;
+    border:1px solid #ccd2d8;
+    border-radius:8px;
+}
+
+textarea{
+    min-height:200px;
+    resize:vertical;
+}
+
+.primary{
+    width:100%;
+    padding:12px;
+    border:0;
+    border-radius:8px;
+    background:#087f5b;
+    color:white;
+    font-weight:bold;
+}
+
+.secondary{
+    padding:9px 12px;
+    border:0;
+    border-radius:7px;
+    background:#34495e;
+    color:white;
+}
+
+.danger{
+    padding:9px 12px;
+    border:0;
+    border-radius:7px;
+    background:#e74c3c;
+    color:white;
+}
+
+.cancel{
+    width:100%;
+    padding:10px;
+    margin-top:8px;
+    border:0;
+    border-radius:8px;
+    background:#95a5a6;
+    color:white;
+}
+
+.blog{
+    border:1px solid #e3e7eb;
+    border-radius:10px;
+    padding:15px;
+    margin-bottom:12px;
+}
+
+.blog h3{
+    margin:0 0 7px;
+}
+
+.meta{
+    font-size:13px;
+    color:#68737d;
+    margin-bottom:10px;
+}
+
+.actions{
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+}
+
+.badge{
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.published{
+    background:#d4f8e8;
+    color:#087f5b;
+}
+
+.draft{
+    background:#fff1c7;
+    color:#8a6500;
+}
+
+.hidden{
+    display:none;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
+    color:#777;
+}
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:500px){
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .container{
+        padding:12px;
+    }
+
+    .topbar{
+        padding:12px;
+    }
+
+    .logo{
+        font-size:16px;
+    }
 }
 </style>
 </head>
 
 <body>
 
+<!-- TOP BAR -->
+
+<div class="topbar">
+
+    <div class="logo">
+        ⚡ EV Repair Hub Admin
+    </div>
+
+    <button
+        class="logout"
+        onclick="logout()"
+        id="logoutButton"
+        style="display:none;"
+    >
+        Logout
+    </button>
+
+</div>
+
+
+<!-- LOGIN -->
+
+<div id="loginBox" class="login-box">
+
+    <h1>⚡ EV Repair Hub</h1>
+
+    <h2>Admin Login</h2>
+
+    <p>
+        Sign in with your authorized GitHub account.
+    </p>
+
+    <button
+        class="github-btn"
+        onclick="loginWithGitHub()"
+    >
+        Continue with GitHub
+    </button>
+
+    <p
+        id="loginMessage"
+        class="message"
+    ></p>
+
+</div>
+
+
+<!-- DASHBOARD -->
+
+<div
+    id="dashboard"
+    class="dashboard"
+>
+
 <div class="container">
 
-<h1>EV Repair Hub Admin</h1>
+    <h1>Admin Dashboard</h1>
 
-<div class="box" id="loginBox">
-  <h2>Admin Login</h2>
+    <p id="adminInfo"></p>
 
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
 
-  <button onclick="login()">Login</button>
+    <!-- STATISTICS -->
 
-  <p id="loginMessage"></p>
+    <div class="stats">
+
+        <div class="stat">
+
+            <h3>Total Blogs</h3>
+
+            <strong id="totalBlogs">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>Published</h3>
+
+            <strong id="publishedBlogs">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>Drafts</h3>
+
+            <strong id="draftBlogs">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>Admin</h3>
+
+            <strong>
+                ✓
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN GRID -->
+
+    <div class="grid">
+
+
+        <!-- BLOG FORM -->
+
+        <div class="card">
+
+            <h2 id="formTitle">
+                Add New Blog
+            </h2>
+
+
+            <label>
+                Blog Title
+            </label>
+
+            <input
+                id="blogTitle"
+                type="text"
+                placeholder="Example: EV Battery Basics"
+            >
+
+
+            <label>
+                Slug
+            </label>
+
+            <input
+                id="blogSlug"
+                type="text"
+                placeholder="Example: ev-battery-basics"
+            >
+
+
+            <label>
+                Short Description
+            </label>
+
+            <input
+                id="blogExcerpt"
+                type="text"
+                placeholder="Short description"
+            >
+
+
+            <label>
+                Image URL
+            </label>
+
+            <input
+                id="blogImage"
+                type="url"
+                placeholder="https://example.com/image.jpg"
+            >
+
+
+            <label>
+                Category
+            </label>
+
+            <select id="blogCategory">
+
+                <option value="EV Technology">
+                    EV Technology
+                </option>
+
+                <option value="Battery">
+                    Battery
+                </option>
+
+                <option value="BMS">
+                    BMS
+                </option>
+
+                <option value="Motor">
+                    Motor
+                </option>
+
+                <option value="Motor Controller">
+                    Motor Controller
+                </option>
+
+                <option value="Charging">
+                    Charging
+                </option>
+
+                <option value="Troubleshooting">
+                    Troubleshooting
+                </option>
+
+                <option value="Testing">
+                    Testing
+                </option>
+
+                <option value="EV Safety">
+                    EV Safety
+                </option>
+
+            </select>
+
+
+            <label>
+                Blog Content
+            </label>
+
+            <textarea
+                id="blogContent"
+                placeholder="Write your complete blog here..."
+            ></textarea>
+
+
+            <label>
+                Status
+            </label>
+
+            <select id="blogStatus">
+
+                <option value="draft">
+                    Draft
+                </option>
+
+                <option value="published">
+                    Published
+                </option>
+
+            </select>
+
+
+            <button
+                id="saveButton"
+                class="primary"
+                onclick="saveBlog()"
+            >
+                Save Blog
+            </button>
+
+
+            <button
+                id="cancelButton"
+                class="cancel hidden"
+                onclick="cancelEdit()"
+            >
+                Cancel Edit
+            </button>
+
+
+            <p
+                id="formMessage"
+                class="message"
+            ></p>
+
+        </div>
+
+
+        <!-- BLOG LIST -->
+
+        <div class="card">
+
+            <h2>
+                📝 Blog Manager
+            </h2>
+
+            <button
+                class="secondary"
+                onclick="loadBlogs()"
+            >
+                🔄 Refresh
+            </button>
+
+            <hr>
+
+            <div id="blogList">
+                Loading blogs...
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-<div class="box" id="panel">
-
-  <h2>Control Panel</h2>
-
-  <button onclick="logout()">Logout</button>
-
-  <hr>
-
-  <h2>Add Repair Guide</h2>
-
-  <input id="title" placeholder="Repair guide title">
-
-  <textarea id="content" rows="8"
-    placeholder="Write repair guide content"></textarea>
-
-  <button onclick="addGuide()">Save Repair Guide</button>
-
-  <p id="message"></p>
-
 </div>
 
-</div>
 
 <script>
 
-const SUPABASE_URL = "https://wwibocfzmuhflddkhygo.supabase.co";
-const SUPABASE_KEY = "sb_publishable_K7pmzot-hdAAPUgIubrG-w_7nNTAGvY";
+/* =====================================================
+   SUPABASE CONFIGURATION
+===================================================== */
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+const SUPABASE_URL =
+"https://wwibocfzmuhflddkhygo.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_K7pmzot-hdAAPUgIubrG-w_7nNTAGvY";
+
+
+const supabaseClient =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
-async function login(){
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+/* =====================================================
+   VARIABLES
+===================================================== */
 
-  const { error } =
-    await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+let editingBlogId = null;
 
-  if(error){
-    document.getElementById("loginMessage").textContent =
-      error.message;
-    return;
-  }
 
-  showPanel();
+/* =====================================================
+   GITHUB LOGIN
+===================================================== */
+
+async function loginWithGitHub(){
+
+    const message =
+        document.getElementById("loginMessage");
+
+    message.textContent =
+        "Opening GitHub login...";
+
+
+    const redirectUrl =
+        window.location.origin +
+        window.location.pathname;
+
+
+    const { error } =
+        await supabaseClient.auth.signInWithOAuth({
+
+            provider:"github",
+
+            options:{
+                redirectTo:redirectUrl
+            }
+
+        });
+
+
+    if(error){
+
+        message.textContent =
+            "❌ " + error.message;
+
+    }
+
 }
+
+
+/* =====================================================
+   CHECK ADMIN
+===================================================== */
+
+async function checkAdmin(){
+
+    const {
+        data:{
+            session
+        }
+    } =
+    await supabaseClient.auth.getSession();
+
+
+    if(!session){
+
+        showLogin();
+
+        return;
+
+    }
+
+
+    const {
+        data:profile,
+        error
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select("name,role")
+        .eq("id",session.user.id)
+        .single();
+
+
+    if(error){
+
+        showLogin();
+
+        document.getElementById(
+            "loginMessage"
+        ).textContent =
+            "❌ Admin profile could not be verified.";
+
+        return;
+
+    }
+
+
+    if(profile.role !== "admin"){
+
+        await supabaseClient.auth.signOut();
+
+        showLogin();
+
+        document.getElementById(
+            "loginMessage"
+        ).textContent =
+            "❌ Access denied. Admin account required.";
+
+        return;
+
+    }
+
+
+    showDashboard(
+        profile,
+        session.user
+    );
+
+}
+
+
+/* =====================================================
+   SHOW LOGIN
+===================================================== */
+
+function showLogin(){
+
+    document.getElementById(
+        "loginBox"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "dashboard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "logoutButton"
+    ).style.display = "none";
+
+}
+
+
+/* =====================================================
+   SHOW DASHBOARD
+===================================================== */
+
+function showDashboard(
+    profile,
+    user
+){
+
+    document.getElementById(
+        "loginBox"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "dashboard"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "logoutButton"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "adminInfo"
+    ).textContent =
+        "Logged in as: " +
+        (profile.name || user.email) +
+        " • Administrator";
+
+
+    loadBlogs();
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
 
 async function logout(){
 
-  await supabaseClient.auth.signOut();
+    await supabaseClient.auth.signOut();
 
-  document.getElementById("panel").style.display="none";
-  document.getElementById("loginBox").style.display="block";
+    editingBlogId = null;
+
+    clearForm();
+
+    showLogin();
+
 }
 
-function showPanel(){
 
-  document.getElementById("loginBox").style.display="none";
-  document.getElementById("panel").style.display="block";
-}
+/* =====================================================
+   LOAD BLOGS
+===================================================== */
 
-async function addGuide(){
+async function loadBlogs(){
 
-  const title =
-    document.getElementById("title").value;
+    const list =
+        document.getElementById("blogList");
 
-  const content =
-    document.getElementById("content").value;
 
-  if(!title || !content){
-    document.getElementById("message").textContent =
-      "Please enter title and content.";
-    return;
-  }
+    list.innerHTML =
+        "Loading blogs...";
 
-  const { error } =
+
+    const {
+        data,
+        error
+    } =
     await supabaseClient
-      .from("repair_guides")
-      .insert([
-        {
-          title: title
-        }
-      ]);
+        .from("blogs")
+        .select("*")
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        );
 
-  if(error){
-    document.getElementById("message").textContent =
-      error.message;
-    return;
-  }
 
-  document.getElementById("message").textContent =
-    "Repair guide saved successfully.";
+    if(error){
 
-  document.getElementById("title").value="";
-  document.getElementById("content").value="";
+        list.innerHTML =
+            "<p>❌ " +
+            escapeHtml(error.message) +
+            "</p>";
+
+        return;
+
+    }
+
+
+    updateStats(
+        data || []
+    );
+
+
+    if(!data || data.length === 0){
+
+        list.innerHTML =
+            '<div class="empty">' +
+            'No blogs yet.<br><br>' +
+            'Create your first blog using the form.' +
+            '</div>';
+
+        return;
+
+    }
+
+
+    list.innerHTML =
+        data.map(
+            blog => createBlogCard(blog)
+        ).join("");
+
 }
 
-async function checkLogin(){
 
-  const { data } =
-    await supabaseClient.auth.getSession();
+/* =====================================================
+   BLOG CARD
+===================================================== */
 
-  if(data.session){
-    showPanel();
-  }
+function createBlogCard(blog){
+
+    const status =
+        blog.status || "draft";
+
+
+    const statusClass =
+        status === "published"
+        ? "published"
+        : "draft";
+
+
+    const statusText =
+        status === "published"
+        ? "Published"
+        : "Draft";
+
+
+    return `
+
+        <div class="blog">
+
+            <h3>
+                ${escapeHtml(
+                    blog.title
+                )}
+            </h3>
+
+
+            <div class="meta">
+
+                Category:
+                ${escapeHtml(
+                    blog.category || "EV Technology"
+                )}
+
+                &nbsp; • &nbsp;
+
+                <span
+                    class="badge ${statusClass}"
+                >
+                    ${statusText}
+                </span>
+
+            </div>
+
+
+            <p>
+                ${escapeHtml(
+                    blog.excerpt || ""
+                )}
+            </p>
+
+
+            <div class="actions">
+
+                <button
+                    class="secondary"
+                    onclick="editBlog(${blog.id})"
+                >
+                    ✏️ Edit
+                </button>
+
+
+                <button
+                    class="secondary"
+                    onclick="toggleStatus(
+                        ${blog.id},
+                        '${status}'
+                    )"
+                >
+                    ${
+                        status === "published"
+                        ? "🔴 Make Draft"
+                        : "🟢 Publish"
+                    }
+                </button>
+
+
+                <button
+                    class="danger"
+                    onclick="deleteBlog(${blog.id})"
+                >
+                    🗑️ Delete
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
 }
 
-checkLogin();
 
-</script>
+/* =====================================================
+   STATISTICS
+===================================================== */
 
-</body>
-</html>
+function updateStats(blogs){
+
+    const total =
+        blogs.length;
+
+
+    const published =
+        blogs.filter(
+            blog =>
+                blog.status === "published"
+        ).length;
+
+
+    const drafts =
+        blogs.filter(
+            blog =>
+                blog.status !== "published"
+        ).length;
+
+
+    document.getElementById(
+        "totalBlogs"
+    ).textContent =
+        total;
+
+
+    document.getElementById(
+        "publishedBlogs"
+    ).textContent =
+        published;
+
+
+    document.getElementById(
+        "draftBlogs"
+    ).textContent =
+        drafts;
+
+}
+
+
+/* =====================================================
+   SAVE BLOG
+===================================================== */
+
+async function saveBlog(){
+
+    const title =
+        document.getElementById(
+            "blogTitle"
+        ).value.trim();
+
+
+    const slug =
+        document.getElementById(
+            "blogSlug"
+        ).value.trim();
+
+
+    const excerpt =
+        document.getElementById(
+            "blogExcerpt"
+        ).value.trim();
+
+
+    const content =
+        document.getElementById(
+            "blogContent"
+        ).value.trim();
+
+
+    const image =
+        document.getElementById(
+            "blogImage"
+        ).value.trim();
+
+
+    const category =
+        document.getElementById(
+            "blogCategory"
+        ).value;
+
+
+    const status =
+        document.getElementById(
+            "blogStatus"
+        ).value;
+
+
+    const message =
+        document.getElementById(
+            "formMessage"
+        );
+
+
+    if(!title){
+
+        message.textContent =
+            "❌ Please enter a blog title.";
+
+        return;
+
+    }
+
+
+    if(!slug){
+
+        message.textContent =
+            "❌ Please enter a slug.";
+
+        return;
+
+    }
+
+
+    if(!content){
+
+        message.textContent =
+            "❌ Please enter blog content.";
+
+        return;
+
+    }
+
+
+    message.textContent =
+        "Saving...";
+
+
+    const blogData = {
+
+        title:title,
+
+        slug:slug,
+
+        excerpt:excerpt || null,
+
+        content:content,
+
+        image_url:image || null,
+
+        category:category,
+
+        author:"Nagaraj M. Gowda",
+
+        status:status,
+
+        updated_at:
+            new Date().toISOString()
+
+    };
+
+
+    let result;
+
+
+    /* UPDATE */
+
+    if(editingBlogId !== null){
+
+        result =
+            await supabaseClient
+                .from("blogs")
+                .update(blogData)
+                .eq(
+                    "id",
+                    editingBlogId
+                );
+
+    }
+
+
+    /* INSERT */
+
+    else{
+
+        result =
+            await supabaseClient
+                .from("blogs")
+                .insert([
+                    blogData
+                ]);
+
+    }
+
+
+    if(result.error){
+
+        message.textContent =
+            "❌ " +
+            result.error.message;
+
+        return;
+
+    }
+
+
+    message.textContent =
+        editingBlogId !== null
+        ? "✅ Blog updated successfully!"
+        : "✅ Blog created successfully!";
+
+
+    clearForm();
+
+    await loadBlogs();
+
+}
+
+
+/* =====================================================
+   EDIT BLOG
+===================================================== */
+
+async function editBlog(id){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("blogs")
+        .select("*")
+        .eq("id",id)
+        .single();
+
+
+    if(error){
+
+        alert(
+            "Could not load blog: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    editingBlogId =
+        id;
+
+
+    document.getElementById(
+        "blogTitle"
+    ).value =
+        data.title || "";
+
+
+    document.getElementById(
+        "blogSlug"
+    ).value =
+        data.slug || "";
+
+
+    document.getElementById(
+        "blogExcerpt"
+    ).value =
+        data.excerpt || "";
+
+
+    document.getElementById(
+        "blogContent"
+    ).value =
+        data.content || "";
+
+
+    document.getElementById(
+        "blogImage"
+    ).value =
+        data.image_url || "";
+
+
+    document.getElementById(
+        "blogCategory"
+    ).value =
+        data.category || "EV Technology";
+
+
+    document.getElementById(
+        "blogStatus"
+    ).value =
+        data.status || "draft";
+
+
+    document.getElementById(
+        "formTitle"
+    ).textContent =
+        "Edit Blog";
+
+
+    document.getElementById(
+        "saveButton"
+    ).textContent =
+        "Update Blog";
+
+
+    document.getElementById(
+        "cancelButton"
+    ).classList.remove(
+        "hidden"
+    );
+
+
+    document.getElementById(
+        "formMessage"
+    ).textContent =
+        "Editing: " +
+        data.title;
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* ======================================
